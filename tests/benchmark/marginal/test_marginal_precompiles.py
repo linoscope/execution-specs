@@ -731,8 +731,8 @@ def _generate_precompile_target(
 # The identity precompile is very cheap, so we need high call counts for good data
 # ============================================================================
 
-# Identity precompile input: 128 bytes of 0xff
-IDENTITY_INPUT = bytes([0xFF] * 128)
+# Identity precompile input: 1024 bytes of 0xff (larger for stronger signal)
+IDENTITY_INPUT = bytes([0xFF] * 1024)
 
 IDENTITY_CONFIG = MarginalPrecompileConfig(
     name="IDENTITY",
@@ -740,7 +740,7 @@ IDENTITY_CONFIG = MarginalPrecompileConfig(
     max_op_count=300,
     step=75,  # 5 data points
     input_data=IDENTITY_INPUT,
-    input_size=len(IDENTITY_INPUT),  # 128 bytes
+    input_size=len(IDENTITY_INPUT),  # 1024 bytes
     num_calls=300,
     gas_limit=500_000_000,  # High gas limit for many calls
 )
