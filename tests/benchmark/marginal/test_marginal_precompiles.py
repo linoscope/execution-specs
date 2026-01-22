@@ -97,6 +97,9 @@ class MarginalPrecompileConfig:
     input_size: int
     """Size of input data in memory."""
 
+    ret_size: int
+    """Size of return data from the precompile."""
+
     num_calls: int = 1
     """Number of times caller calls target (for caller-contract approach). Default 1 = no caller."""
 
@@ -166,6 +169,7 @@ ECRECOVER_CONFIG = MarginalPrecompileConfig(
     step=66,  # 4 data points
     input_data=ECRECOVER_INPUT,
     input_size=len(ECRECOVER_INPUT),  # 128 bytes
+    ret_size=32,  # 32-byte padded address
     num_calls=2,  # Keep num_calls for proving time
 )
 
@@ -230,6 +234,7 @@ MODEXP_CONFIG = MarginalPrecompileConfig(
     step=12,  # 4 data points
     input_data=MODEXP_INPUT,
     input_size=len(MODEXP_INPUT),  # 96 + 512 + 1 + 512 = 1121 bytes
+    ret_size=512,  # Same as modulus length
     num_calls=1,
     gas_limit=10_000_000,  # High limit for worst-case MODEXP
 )
@@ -251,6 +256,7 @@ SHA256_CONFIG = MarginalPrecompileConfig(
     step=250,  # 5 data points
     input_data=SHA256_INPUT,
     input_size=len(SHA256_INPUT),  # 4096 bytes
+    ret_size=32,  # 32-byte hash
     num_calls=8,  # 24KB limit
 )
 
@@ -270,6 +276,7 @@ RIPEMD160_CONFIG = MarginalPrecompileConfig(
     step=250,  # 5 data points
     input_data=RIPEMD160_INPUT,
     input_size=len(RIPEMD160_INPUT),  # 1024 bytes
+    ret_size=32,  # 20-byte hash padded to 32
     num_calls=3,  # 24KB limit
 )
 
@@ -295,6 +302,7 @@ BN128_ADD_CONFIG = MarginalPrecompileConfig(
     step=200,  # 5 data points
     input_data=BN128_ADD_INPUT,
     input_size=len(BN128_ADD_INPUT),  # 128 bytes
+    ret_size=64,  # One G1 point (2 × 32 bytes)
     num_calls=3,
 )
 
@@ -318,6 +326,7 @@ BN128_MUL_CONFIG = MarginalPrecompileConfig(
     step=24,  # 4 data points
     input_data=BN128_MUL_INPUT,
     input_size=len(BN128_MUL_INPUT),  # 96 bytes
+    ret_size=64,  # One G1 point (2 × 32 bytes)
     num_calls=2,  # Keep for proving time
 )
 
@@ -350,6 +359,7 @@ BN128_PAIRING_CONFIG = MarginalPrecompileConfig(
     step=2,  # 5 data points
     input_data=BN128_PAIRING_INPUT,
     input_size=len(BN128_PAIRING_INPUT),  # 384 bytes (2 pairs * 192)
+    ret_size=32,  # Single boolean (1 if valid, 0 if not)
     num_calls=2,  # Keep for proving time
 )
 
@@ -384,6 +394,7 @@ BLAKE2F_CONFIG = MarginalPrecompileConfig(
     step=3,  # 4 data points
     input_data=BLAKE2F_INPUT,
     input_size=len(BLAKE2F_INPUT),  # 213 bytes
+    ret_size=64,  # 64-byte state vector
     num_calls=1,
     gas_limit=1_000_000,
 )
@@ -414,6 +425,7 @@ POINT_EVALUATION_CONFIG = MarginalPrecompileConfig(
     step=3,  # 4 data points
     input_data=POINT_EVALUATION_INPUT,
     input_size=len(POINT_EVALUATION_INPUT),  # 192 bytes
+    ret_size=64,  # FIELD_ELEMENTS_PER_BLOB (32) + BLS_MODULUS (32)
     num_calls=1,
     gas_limit=1_000_000,
 )
@@ -436,6 +448,7 @@ BLS12_G1ADD_CONFIG = MarginalPrecompileConfig(
     step=192,  # 5 data points
     input_data=BLS12_G1ADD_INPUT,
     input_size=len(BLS12_G1ADD_INPUT),  # 256 bytes
+    ret_size=128,  # One G1 point (128 bytes)
     num_calls=2,
     gas_limit=1_000_000,
 )
@@ -455,6 +468,7 @@ BLS12_G1MSM_CONFIG = MarginalPrecompileConfig(
     step=13,  # 4 data points
     input_data=BLS12_G1MSM_INPUT,
     input_size=len(BLS12_G1MSM_INPUT),  # 320 bytes (2 × 160)
+    ret_size=128,  # One G1 point (128 bytes)
     num_calls=1,
     gas_limit=1_000_000,
 )
@@ -473,6 +487,7 @@ BLS12_G2ADD_CONFIG = MarginalPrecompileConfig(
     step=112,  # 5 data points
     input_data=BLS12_G2ADD_INPUT,
     input_size=len(BLS12_G2ADD_INPUT),  # 512 bytes
+    ret_size=256,  # One G2 point (256 bytes)
     num_calls=1,
     gas_limit=1_000_000,
 )
@@ -492,6 +507,7 @@ BLS12_G2MSM_CONFIG = MarginalPrecompileConfig(
     step=6,  # 5 data points
     input_data=BLS12_G2MSM_INPUT,
     input_size=len(BLS12_G2MSM_INPUT),  # 576 bytes (2 × 288)
+    ret_size=256,  # One G2 point (256 bytes)
     num_calls=1,
     gas_limit=10_000_000,  # High limit for G2MSM
 )
@@ -511,6 +527,7 @@ BLS12_PAIRING_CONFIG = MarginalPrecompileConfig(
     step=3,  # 4 data points
     input_data=BLS12_PAIRING_INPUT,
     input_size=len(BLS12_PAIRING_INPUT),  # 768 bytes (2 × 384)
+    ret_size=32,  # Single boolean (1 if valid, 0 if not)
     num_calls=1,
     gas_limit=10_000_000,  # Higher limit for pairing
 )
@@ -529,6 +546,7 @@ BLS12_MAP_FP_TO_G1_CONFIG = MarginalPrecompileConfig(
     step=18,  # 5 data points
     input_data=BLS12_MAP_FP_TO_G1_INPUT,
     input_size=len(BLS12_MAP_FP_TO_G1_INPUT),  # 64 bytes
+    ret_size=128,  # One G1 point (128 bytes)
     num_calls=1,
     gas_limit=1_000_000,
 )
@@ -547,6 +565,7 @@ BLS12_MAP_FP2_TO_G2_CONFIG = MarginalPrecompileConfig(
     step=6,  # 5 data points
     input_data=BLS12_MAP_FP2_TO_G2_INPUT,
     input_size=len(BLS12_MAP_FP2_TO_G2_INPUT),  # 128 bytes
+    ret_size=256,  # One G2 point (256 bytes)
     num_calls=1,
     gas_limit=1_000_000,
 )
@@ -592,6 +611,7 @@ def test_marginal_modexp(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -668,6 +688,7 @@ def _generate_precompile_target(
     input_data: bytes,
     op_count: int,
     max_op_count: int,
+    ret_size: int,
 ) -> Bytecode:
     """
     Generate a target contract for any precompile with proper marginal padding.
@@ -705,7 +726,7 @@ def _generate_precompile_target(
                 args_offset=0,
                 args_size=input_size,
                 ret_offset=ret_offset,
-                ret_size=32,
+                ret_size=ret_size,
             )
         )
     
@@ -718,7 +739,7 @@ def _generate_precompile_target(
                 args_offset=0,
                 args_size=input_size,
                 ret_offset=ret_offset,
-                ret_size=32,
+                ret_size=ret_size,
             )
         )
 
@@ -740,7 +761,8 @@ IDENTITY_CONFIG = MarginalPrecompileConfig(
     max_op_count=300,
     step=75,  # 5 data points
     input_data=IDENTITY_INPUT,
-    input_size=len(IDENTITY_INPUT),  # 128 bytes
+    input_size=len(IDENTITY_INPUT),  # 1024 bytes
+    ret_size=len(IDENTITY_INPUT),  # Same as input (identity copy)
     num_calls=300,
     gas_limit=500_000_000,  # High gas limit for many calls
 )
@@ -774,6 +796,7 @@ def test_marginal_identity(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -823,6 +846,7 @@ def test_marginal_blake2f(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -871,6 +895,7 @@ def test_marginal_point_evaluation(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -919,6 +944,7 @@ def test_marginal_bls12_g1add(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -967,6 +993,7 @@ def test_marginal_bls12_g1msm(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1015,6 +1042,7 @@ def test_marginal_bls12_g2add(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1063,6 +1091,7 @@ def test_marginal_bls12_g2msm(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1111,6 +1140,7 @@ def test_marginal_bls12_pairing(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1159,6 +1189,7 @@ def test_marginal_bls12_map_fp_to_g1(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1207,6 +1238,7 @@ def test_marginal_bls12_map_fp2_to_g2(
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
+        ret_size=cfg.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1252,6 +1284,7 @@ def test_marginal_ecrecover(
         ECRECOVER_CONFIG.input_data,
         op_count,
         ECRECOVER_CONFIG.max_op_count,
+        ECRECOVER_CONFIG.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1297,6 +1330,7 @@ def test_marginal_sha256(
         SHA256_CONFIG.input_data,
         op_count,
         SHA256_CONFIG.max_op_count,
+        SHA256_CONFIG.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1342,6 +1376,7 @@ def test_marginal_ripemd160(
         RIPEMD160_CONFIG.input_data,
         op_count,
         RIPEMD160_CONFIG.max_op_count,
+        RIPEMD160_CONFIG.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1387,6 +1422,7 @@ def test_marginal_bn128_add(
         BN128_ADD_CONFIG.input_data,
         op_count,
         BN128_ADD_CONFIG.max_op_count,
+        BN128_ADD_CONFIG.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1432,6 +1468,7 @@ def test_marginal_bn128_mul(
         BN128_MUL_CONFIG.input_data,
         op_count,
         BN128_MUL_CONFIG.max_op_count,
+        BN128_MUL_CONFIG.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
@@ -1477,6 +1514,7 @@ def test_marginal_bn128_pairing(
         BN128_PAIRING_CONFIG.input_data,
         op_count,
         BN128_PAIRING_CONFIG.max_op_count,
+        BN128_PAIRING_CONFIG.ret_size,
     )
     target = pre.deploy_contract(code=target_code)
     
