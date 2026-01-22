@@ -170,7 +170,7 @@ SUB_CONFIG = MarginalOpcodeConfig(
     stack_args=[BLS12_381_SCALAR_FIELD, SECP256K1_FIELD_PRIME],  # DEFAULT_BINOP_ARGS
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=950,
+    num_calls=1900,
 )
 
 # Ref: test_arithmetic.py opcode_DIV-0
@@ -360,7 +360,7 @@ AND_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=1000,
+    num_calls=2000,
 )
 
 OR_CONFIG = MarginalOpcodeConfig(
@@ -371,7 +371,7 @@ OR_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=1000,
+    num_calls=2000,
 )
 
 XOR_CONFIG = MarginalOpcodeConfig(
@@ -393,7 +393,7 @@ NOT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256],
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=800,
+    num_calls=1600,
 )
 
 BYTE_CONFIG = MarginalOpcodeConfig(
@@ -404,7 +404,7 @@ BYTE_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, 31],  # x=MAX, i=31
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=400,
+    num_calls=800,
 )
 
 SHL_CONFIG = MarginalOpcodeConfig(
@@ -480,7 +480,7 @@ KECCAK256_CONFIG = MarginalOpcodeConfig(
 # - DUP/SWAP: DUP1-16, SWAP1-16
 
 # Uniform num_calls for all variants within each opcode type
-PUSH_NUM_CALLS = 300
+PUSH_NUM_CALLS = 600
 DUP_NUM_CALLS = 900
 SWAP_NUM_CALLS = 750
 
