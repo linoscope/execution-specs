@@ -474,54 +474,51 @@ KECCAK256_CONFIG = MarginalOpcodeConfig(
 # ============================================================================
 # STACK OPCODES
 # ============================================================================
-# We benchmark representative samples rather than all variants:
-# - PUSH: PUSH0, PUSH1, PUSH16, PUSH32 (covers zero, small, medium, max sizes)
+# We benchmark all variants:
+# - PUSH: PUSH0-PUSH32
 # - POP: single variant
-# - DUP/SWAP: 1, 8, 16 variants (covers shallow, mid, deep stack access)
+# - DUP/SWAP: DUP1-16, SWAP1-16
 
-PUSH0_CONFIG = MarginalOpcodeConfig(
-    name="PUSH0",
-    opcode=Op.PUSH0,  # EIP-3855, pushes 0 onto stack
-    max_op_count=600,
-    step=150,  # 5 data points
-    stack_args=[],
-    inputs_per_op=0,
-    outputs_per_op=1,
-    num_calls=500,
-)
+# Uniform num_calls for all variants within each opcode type
+PUSH_NUM_CALLS = 300
+DUP_NUM_CALLS = 900
+SWAP_NUM_CALLS = 750
 
-PUSH1_CONFIG = MarginalOpcodeConfig(
-    name="PUSH1",
-    opcode=Op.PUSH1(0xFF),  # Push max 1-byte value
-    max_op_count=600,
-    step=150,  # 5 data points
-    stack_args=[],  # PUSH doesn't consume stack
-    inputs_per_op=0,
-    outputs_per_op=1,
-    num_calls=300,
-)
 
-PUSH16_CONFIG = MarginalOpcodeConfig(
-    name="PUSH16",
-    opcode=Op.PUSH16(MAX_U256 >> 128),  # Max 16-byte value
-    max_op_count=500,
-    step=125,  # 5 data points
-    stack_args=[],
-    inputs_per_op=0,
-    outputs_per_op=1,
-    num_calls=500,
-)
+def _push_max_value(n: int) -> int:
+    """Return the maximum value for a PUSHn immediate."""
+    if n == 32:
+        return MAX_U256
+    return (1 << (n * 8)) - 1
 
-PUSH32_CONFIG = MarginalOpcodeConfig(
-    name="PUSH32",
-    opcode=Op.PUSH32(MAX_U256),  # Max 32-byte value
-    max_op_count=280,
-    step=70,  # 5 data points
-    stack_args=[],
-    inputs_per_op=0,
-    outputs_per_op=1,
-    num_calls=300,
-)
+
+def _push_max_op_count(n: int) -> int:
+    """Select max_op_count based on PUSH immediate size (bytecode size limit)."""
+    if n <= 8:
+        return 600
+    if n <= 16:
+        return 500
+    return 280
+
+
+def _create_push_config(n: int) -> MarginalOpcodeConfig:
+    """Generate a MarginalOpcodeConfig for PUSHn."""
+    max_op_count = _push_max_op_count(n)
+    step = max_op_count // 4  # 5 data points
+    opcode = Op.PUSH0 if n == 0 else getattr(Op, f"PUSH{n}")(_push_max_value(n))
+    return MarginalOpcodeConfig(
+        name=f"PUSH{n}",
+        opcode=opcode,
+        max_op_count=max_op_count,
+        step=step,
+        stack_args=[],  # PUSH doesn't consume stack
+        inputs_per_op=0,
+        outputs_per_op=1,
+        num_calls=PUSH_NUM_CALLS,
+    )
+
+
+PUSH_CONFIGS = {n: _create_push_config(n) for n in range(0, 33)}
 
 
 # For marginal testing, we need to provide values to pop
@@ -541,25 +538,27 @@ POP_CONFIG = MarginalOpcodeConfig(
 # These opcodes require custom target generators (not MarginalOpcodeConfig).
 # ============================================================================
 
-DUP1_CONFIG = CustomTargetConfig(
-    name="DUP1", max_op_count=300, step=75, num_calls=950, variant=1  # 5 points
-)
-DUP8_CONFIG = CustomTargetConfig(
-    name="DUP8", max_op_count=300, step=75, num_calls=950, variant=8  # 5 points
-)
-DUP16_CONFIG = CustomTargetConfig(
-    name="DUP16", max_op_count=300, step=75, num_calls=900, variant=16  # 5 points
-)
+DUP_CONFIGS = {
+    n: CustomTargetConfig(
+        name=f"DUP{n}",
+        max_op_count=300,
+        step=75,  # 5 data points
+        num_calls=DUP_NUM_CALLS,
+        variant=n,
+    )
+    for n in range(1, 17)
+}
 
-SWAP1_CONFIG = CustomTargetConfig(
-    name="SWAP1", max_op_count=300, step=75, num_calls=500, variant=1  # 5 points
-)
-SWAP8_CONFIG = CustomTargetConfig(
-    name="SWAP8", max_op_count=300, step=75, num_calls=750, variant=8  # 5 points
-)
-SWAP16_CONFIG = CustomTargetConfig(
-    name="SWAP16", max_op_count=300, step=75, num_calls=750, variant=16  # 5 points
-)
+SWAP_CONFIGS = {
+    n: CustomTargetConfig(
+        name=f"SWAP{n}",
+        max_op_count=300,
+        step=75,  # 5 data points
+        num_calls=SWAP_NUM_CALLS,
+        variant=n,
+    )
+    for n in range(1, 17)
+}
 
 LOG0_CONFIG = MarginalOpcodeConfig(
     name="LOG0",
@@ -1938,10 +1937,8 @@ test_shr = _create_amplifier_test(SHR_CONFIG)
 test_sar = _create_amplifier_test(SAR_CONFIG)
 
 # Stack opcodes
-test_push0 = _create_amplifier_test(PUSH0_CONFIG)
-test_push1 = _create_amplifier_test(PUSH1_CONFIG)
-test_push16 = _create_amplifier_test(PUSH16_CONFIG)
-test_push32 = _create_amplifier_test(PUSH32_CONFIG)
+for n in range(0, 33):
+    globals()[f"test_push{n}"] = _create_amplifier_test(PUSH_CONFIGS[n])
 test_pop = _create_amplifier_test(POP_CONFIG)
 
 # Environment opcodes
@@ -2006,26 +2003,18 @@ test_sstore = _create_amplifier_test(SSTORE_CONFIG)
 test_tstore = _create_amplifier_test(TSTORE_CONFIG)
 
 # DUP opcodes
-test_dup1 = _create_amplifier_test(
-    DUP1_CONFIG, lambda oc, moc: generate_dup_target(DUP1_CONFIG.variant, oc, moc)
-)
-test_dup8 = _create_amplifier_test(
-    DUP8_CONFIG, lambda oc, moc: generate_dup_target(DUP8_CONFIG.variant, oc, moc)
-)
-test_dup16 = _create_amplifier_test(
-    DUP16_CONFIG, lambda oc, moc: generate_dup_target(DUP16_CONFIG.variant, oc, moc)
-)
+for n in range(1, 17):
+    cfg = DUP_CONFIGS[n]
+    globals()[f"test_dup{n}"] = _create_amplifier_test(
+        cfg, lambda oc, moc, v=cfg.variant: generate_dup_target(v, oc, moc)
+    )
 
 # SWAP opcodes
-test_swap1 = _create_amplifier_test(
-    SWAP1_CONFIG, lambda oc, moc: generate_swap_target(SWAP1_CONFIG.variant, oc, moc)
-)
-test_swap8 = _create_amplifier_test(
-    SWAP8_CONFIG, lambda oc, moc: generate_swap_target(SWAP8_CONFIG.variant, oc, moc)
-)
-test_swap16 = _create_amplifier_test(
-    SWAP16_CONFIG, lambda oc, moc: generate_swap_target(SWAP16_CONFIG.variant, oc, moc)
-)
+for n in range(1, 17):
+    cfg = SWAP_CONFIGS[n]
+    globals()[f"test_swap{n}"] = _create_amplifier_test(
+        cfg, lambda oc, moc, v=cfg.variant: generate_swap_target(v, oc, moc)
+    )
 
 # LOG opcodes (require CALL instead of STATICCALL)
 test_log0 = _create_amplifier_test(LOG0_CONFIG)
