@@ -290,7 +290,7 @@ LT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=400,
+    num_calls=1000,
 )
 
 GT_CONFIG = MarginalOpcodeConfig(
@@ -301,7 +301,7 @@ GT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=400,
+    num_calls=1000,
 )
 
 SLT_CONFIG = MarginalOpcodeConfig(
@@ -312,7 +312,7 @@ SLT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=650,
+    num_calls=1000,
 )
 
 SGT_CONFIG = MarginalOpcodeConfig(
@@ -323,7 +323,7 @@ SGT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=450,
+    num_calls=1000,
 )
 
 EQ_CONFIG = MarginalOpcodeConfig(
@@ -345,7 +345,7 @@ ISZERO_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256],
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=600,
+    num_calls=800,
 )
 
 # ============================================================================
@@ -360,7 +360,7 @@ AND_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=400,
+    num_calls=1000,
 )
 
 OR_CONFIG = MarginalOpcodeConfig(
@@ -371,7 +371,7 @@ OR_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=600,
+    num_calls=1000,
 )
 
 XOR_CONFIG = MarginalOpcodeConfig(
@@ -393,7 +393,7 @@ NOT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256],
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=500,
+    num_calls=800,
 )
 
 BYTE_CONFIG = MarginalOpcodeConfig(
@@ -552,7 +552,7 @@ DUP16_CONFIG = CustomTargetConfig(
 )
 
 SWAP1_CONFIG = CustomTargetConfig(
-    name="SWAP1", max_op_count=300, step=75, num_calls=250, variant=1  # 5 points
+    name="SWAP1", max_op_count=300, step=75, num_calls=500, variant=1  # 5 points
 )
 SWAP8_CONFIG = CustomTargetConfig(
     name="SWAP8", max_op_count=300, step=75, num_calls=750, variant=8  # 5 points
@@ -772,7 +772,7 @@ PREVRANDAO_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=100,
+    num_calls=200,
 )
 
 GASLIMIT_CONFIG = MarginalOpcodeConfig(
@@ -783,7 +783,7 @@ GASLIMIT_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=300,
+    num_calls=500,
 )
 
 CHAINID_CONFIG = MarginalOpcodeConfig(

@@ -242,8 +242,8 @@ SHA256_INPUT = bytes.fromhex("ff" * 4096)  # 4KB of 0xff
 SHA256_CONFIG = MarginalPrecompileConfig(
     name="SHA256",
     address=SHA256_ADDRESS,
-    max_op_count=600,  # Reduced for 24KB with PUSH20 noop
-    step=150,  # 5 data points
+    max_op_count=1000,  # 24KB limit with noop padding
+    step=250,  # 5 data points
     input_data=SHA256_INPUT,
     input_size=len(SHA256_INPUT),  # 4096 bytes
     num_calls=5,  # 24KB limit
@@ -261,8 +261,8 @@ RIPEMD160_INPUT = bytes.fromhex("ff" * 1024)  # 1KB of 0xff
 RIPEMD160_CONFIG = MarginalPrecompileConfig(
     name="RIPEMD160",
     address=RIPEMD160_ADDRESS,
-    max_op_count=700,  # Reduced for 24KB with PUSH20 noop
-    step=175,  # 5 data points
+    max_op_count=1000,  # 24KB limit with noop padding
+    step=250,  # 5 data points
     input_data=RIPEMD160_INPUT,
     input_size=len(RIPEMD160_INPUT),  # 1024 bytes
     num_calls=3,  # 24KB limit
@@ -286,8 +286,8 @@ BN128_ADD_INPUT = bytes.fromhex(
 BN128_ADD_CONFIG = MarginalPrecompileConfig(
     name="BN128_ADD",
     address=BN128_ADD_ADDRESS,
-    max_op_count=730,  # Reduced for 24KB with PUSH20 noop
-    step=182,  # 5 data points
+    max_op_count=800,
+    step=200,  # 5 data points
     input_data=BN128_ADD_INPUT,
     input_size=len(BN128_ADD_INPUT),  # 128 bytes
     num_calls=3,
@@ -427,8 +427,8 @@ BLS12_G1ADD_INPUT = bytes(BLS12Spec.G1 + BLS12Spec.P1)
 BLS12_G1ADD_CONFIG = MarginalPrecompileConfig(
     name="BLS12_G1ADD",
     address=BLS12_G1ADD_ADDRESS,
-    max_op_count=730,  # Reduced for 24KB with PUSH20 noop
-    step=182,  # 5 data points
+    max_op_count=770,
+    step=192,  # 5 data points
     input_data=BLS12_G1ADD_INPUT,
     input_size=len(BLS12_G1ADD_INPUT),  # 256 bytes
     num_calls=1,
@@ -582,12 +582,8 @@ def test_marginal_modexp(
     """
     cfg = MODEXP_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -664,7 +660,6 @@ def _generate_precompile_caller(target_address: Address, num_calls: int) -> Byte
 
 def _generate_precompile_target(
     precompile_address: Address,
-    noop_address: Address,
     input_data: bytes,
     op_count: int,
     max_op_count: int,
@@ -673,18 +668,10 @@ def _generate_precompile_target(
     Generate a target contract for any precompile with proper marginal padding.
     
     Stores input data in memory, then executes:
-    - (max_op_count - op_count + 1) noop STATICCALLs to noop_address
+    - (max_op_count - op_count + 1) noop STATICCALLs to 0xFFFF
     - op_count real STATICCALLs to the precompile
 
     This keeps total STATICCALL count constant for marginal property.
-    
-    Args:
-        precompile_address: Address of the precompile to measure
-        noop_address: Address of a deployed STOP contract for noop calls.
-                      Using a real contract (vs 0xFFFF) ensures consistent ZK cycle cost.
-        input_data: Input data for the precompile call
-        op_count: Number of real precompile calls
-        max_op_count: Maximum op_count for this test series
     """
     code = Bytecode()
     input_size = len(input_data)
@@ -699,14 +686,13 @@ def _generate_precompile_target(
     
     ret_offset = input_size  # Return data goes after input
 
-    # Noop STATICCALLs to deployed STOP contract
-    # Using a real contract ensures consistent ZK cycle cost across all noops
+    # Noop STATICCALLs to invalid address 0xFFFF
     noop_count = max_op_count - op_count + 1
     for _ in range(noop_count):
         code += Op.POP(
             Op.STATICCALL(
                 gas=Op.GAS,
-                address=noop_address,
+                address=0xFFFF,  # Invalid address - noop
                 args_offset=0,
                 args_size=input_size,
                 ret_offset=ret_offset,
@@ -775,13 +761,9 @@ def test_marginal_identity(
     """
     cfg = IDENTITY_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     # Target contract calls IDENTITY op_count times with noop padding
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -829,12 +811,8 @@ def test_marginal_blake2f(
     """
     cfg = BLAKE2F_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -881,12 +859,8 @@ def test_marginal_point_evaluation(
     """
     cfg = POINT_EVALUATION_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -933,12 +907,8 @@ def test_marginal_bls12_g1add(
     """
     cfg = BLS12_G1ADD_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -985,12 +955,8 @@ def test_marginal_bls12_g1msm(
     """
     cfg = BLS12_G1MSM_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -1037,12 +1003,8 @@ def test_marginal_bls12_g2add(
     """
     cfg = BLS12_G2ADD_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -1089,12 +1051,8 @@ def test_marginal_bls12_g2msm(
     """
     cfg = BLS12_G2MSM_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -1141,12 +1099,8 @@ def test_marginal_bls12_pairing(
     """
     cfg = BLS12_PAIRING_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -1193,12 +1147,8 @@ def test_marginal_bls12_map_fp_to_g1(
     """
     cfg = BLS12_MAP_FP_TO_G1_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -1245,12 +1195,8 @@ def test_marginal_bls12_map_fp2_to_g2(
     """
     cfg = BLS12_MAP_FP2_TO_G2_CONFIG
     
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         precompile_address=cfg.address,
-        noop_address=noop,
         input_data=cfg.input_data,
         op_count=op_count,
         max_op_count=cfg.max_op_count,
@@ -1294,12 +1240,8 @@ def test_marginal_ecrecover(
     
     Uses a two-level structure for 2x amplification of proving time.
     """
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         ECRECOVER_CONFIG.address,
-        noop,
         ECRECOVER_CONFIG.input_data,
         op_count,
         ECRECOVER_CONFIG.max_op_count,
@@ -1343,12 +1285,8 @@ def test_marginal_sha256(
     
     Uses a two-level structure for 2x amplification of proving time.
     """
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         SHA256_CONFIG.address,
-        noop,
         SHA256_CONFIG.input_data,
         op_count,
         SHA256_CONFIG.max_op_count,
@@ -1392,12 +1330,8 @@ def test_marginal_ripemd160(
     
     Uses a two-level structure for 2x amplification of proving time.
     """
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         RIPEMD160_CONFIG.address,
-        noop,
         RIPEMD160_CONFIG.input_data,
         op_count,
         RIPEMD160_CONFIG.max_op_count,
@@ -1441,12 +1375,8 @@ def test_marginal_bn128_add(
     
     Uses a two-level structure for 2x amplification of proving time.
     """
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         BN128_ADD_CONFIG.address,
-        noop,
         BN128_ADD_CONFIG.input_data,
         op_count,
         BN128_ADD_CONFIG.max_op_count,
@@ -1490,12 +1420,8 @@ def test_marginal_bn128_mul(
     
     Uses a two-level structure for 2x amplification of proving time.
     """
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         BN128_MUL_CONFIG.address,
-        noop,
         BN128_MUL_CONFIG.input_data,
         op_count,
         BN128_MUL_CONFIG.max_op_count,
@@ -1539,12 +1465,8 @@ def test_marginal_bn128_pairing(
     
     Uses a two-level structure for 2x amplification of proving time.
     """
-    # Deploy a minimal STOP contract for noop calls
-    noop = pre.deploy_contract(code=Op.STOP)
-    
     target_code = _generate_precompile_target(
         BN128_PAIRING_CONFIG.address,
-        noop,
         BN128_PAIRING_CONFIG.input_data,
         op_count,
         BN128_PAIRING_CONFIG.max_op_count,
