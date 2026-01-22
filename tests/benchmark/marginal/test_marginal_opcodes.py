@@ -466,7 +466,7 @@ KECCAK256_CONFIG = MarginalOpcodeConfig(
     stack_args=[8192, 0],  # size=8KB, offset=0
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=20,
+    num_calls=10,
     # Pre-allocate 8KB of memory with data to hash
     setup_code=_generate_keccak256_setup(),
 )
@@ -481,7 +481,7 @@ KECCAK256_CONFIG = MarginalOpcodeConfig(
 
 # Uniform num_calls for all variants within each opcode type
 PUSH_NUM_CALLS = 600
-DUP_NUM_CALLS = 900
+DUP_NUM_CALLS = 1200
 SWAP_NUM_CALLS = 750
 
 

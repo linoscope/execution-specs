@@ -233,7 +233,7 @@ MODEXP_CONFIG = MarginalPrecompileConfig(
     max_op_count=36,
     step=12,  # 4 data points
     input_data=MODEXP_INPUT,
-    input_size=len(MODEXP_INPUT),  # 96 + 512 + 1 + 512 = 1121 bytes
+    input_size=len(MODEXP_INPUT),  # 96 + 512 + 1 + 512 = 1121 bytes6
     ret_size=512,  # Same as modulus length
     num_calls=1,
     gas_limit=10_000_000,  # High limit for worst-case MODEXP
@@ -763,7 +763,7 @@ IDENTITY_CONFIG = MarginalPrecompileConfig(
     input_data=IDENTITY_INPUT,
     input_size=len(IDENTITY_INPUT),  # 1024 bytes
     ret_size=len(IDENTITY_INPUT),  # Same as input (identity copy)
-    num_calls=300,
+    num_calls=200,
     gas_limit=500_000_000,  # High gas limit for many calls
 )
 
