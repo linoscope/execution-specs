@@ -732,8 +732,7 @@ def _generate_precompile_target(
 # The identity precompile is very cheap, so we need high call counts for good data
 # ============================================================================
 
-# Identity precompile input: 128 bytes of 0xff
-IDENTITY_INPUT = bytes([0xFF] * 128)
+IDENTITY_INPUT = bytes([0xFF] * 1024)
 
 IDENTITY_CONFIG = MarginalPrecompileConfig(
     name="IDENTITY",
