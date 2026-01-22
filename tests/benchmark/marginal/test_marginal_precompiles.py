@@ -101,7 +101,7 @@ class MarginalPrecompileConfig:
     """Size of return data from the precompile."""
 
     num_calls: int = 1
-    """Number of times caller calls target (for caller-contract approach). Default 1 = no caller."""
+    """Number of times amplifier calls target (for amplifier-target approach). Default 1 = no amplifier."""
 
     gas_limit: int = 500_000_000
     """Gas limit for the transaction. Default 500M for high-amplification tests."""
@@ -615,33 +615,33 @@ def test_marginal_modexp(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
 
 # ============================================================================
-# CALLER-CONTRACT APPROACH HELPER FUNCTIONS
-# These functions generate caller and target contracts for precompiles that
+# AMPLIFIER-TARGET APPROACH HELPER FUNCTIONS
+# These functions generate amplifier and target contracts for precompiles that
 # benefit from amplification (e.g., cheap precompiles like IDENTITY, or
 # short-proving-time precompiles)
 # ============================================================================
 
 
-def _generate_precompile_caller(target_address: Address, num_calls: int) -> Bytecode:
+def _generate_precompile_amplifier(target_address: Address, num_calls: int) -> Bytecode:
     """
-    Generate a caller contract that calls the target num_calls times using a loop.
+    Generate an amplifier contract that calls the target num_calls times using a loop.
     Uses STATICCALL since target doesn't modify state.
     """
     code = Bytecode()
@@ -780,10 +780,10 @@ def test_marginal_identity(
     op_count: int,
 ) -> None:
     """
-    Marginal cost estimation test for IDENTITY precompile using caller-contract approach.
+    Marginal cost estimation test for IDENTITY precompile using amplifier-target approach.
     
     Uses a two-level structure:
-    - Caller contract loops num_calls times
+    - Amplifier contract loops num_calls times
     - Target contract calls IDENTITY precompile op_count times per invocation
     - Total IDENTITY calls = num_calls × op_count
     
@@ -800,19 +800,19 @@ def test_marginal_identity(
     )
     target = pre.deploy_contract(code=target_code)
     
-    # Caller contract loops num_calls times
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    # Amplifier contract loops num_calls times
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -850,18 +850,18 @@ def test_marginal_blake2f(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -899,18 +899,18 @@ def test_marginal_point_evaluation(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -948,18 +948,18 @@ def test_marginal_bls12_g1add(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -997,18 +997,18 @@ def test_marginal_bls12_g1msm(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -1046,18 +1046,18 @@ def test_marginal_bls12_g2add(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -1095,18 +1095,18 @@ def test_marginal_bls12_g2msm(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -1144,18 +1144,18 @@ def test_marginal_bls12_pairing(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -1193,18 +1193,18 @@ def test_marginal_bls12_map_fp_to_g1(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
@@ -1242,24 +1242,24 @@ def test_marginal_bls12_map_fp2_to_g2(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, cfg.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, cfg.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=cfg.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=cfg.gas_limit), pre=pre, post=post, tx=tx)
 
 
 # ============================================================================
-# ECRECOVER with caller-contract approach
+# ECRECOVER with amplifier-target approach
 # ============================================================================
 
 
@@ -1275,7 +1275,7 @@ def test_marginal_ecrecover(
     op_count: int,
 ) -> None:
     """
-    Marginal cost estimation test for ECRECOVER using caller-contract approach.
+    Marginal cost estimation test for ECRECOVER using amplifier-target approach.
     
     Uses a two-level structure for 2x amplification of proving time.
     """
@@ -1288,24 +1288,24 @@ def test_marginal_ecrecover(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, ECRECOVER_CONFIG.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, ECRECOVER_CONFIG.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=ECRECOVER_CONFIG.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=ECRECOVER_CONFIG.gas_limit), pre=pre, post=post, tx=tx)
 
 
 # ============================================================================
-# SHA256 with caller-contract approach
+# SHA256 with amplifier-target approach
 # ============================================================================
 
 
@@ -1321,7 +1321,7 @@ def test_marginal_sha256(
     op_count: int,
 ) -> None:
     """
-    Marginal cost estimation test for SHA256 using caller-contract approach.
+    Marginal cost estimation test for SHA256 using amplifier-target approach.
     
     Uses a two-level structure for 2x amplification of proving time.
     """
@@ -1334,24 +1334,24 @@ def test_marginal_sha256(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, SHA256_CONFIG.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, SHA256_CONFIG.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=SHA256_CONFIG.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=SHA256_CONFIG.gas_limit), pre=pre, post=post, tx=tx)
 
 
 # ============================================================================
-# RIPEMD160 with caller-contract approach
+# RIPEMD160 with amplifier-target approach
 # ============================================================================
 
 
@@ -1367,7 +1367,7 @@ def test_marginal_ripemd160(
     op_count: int,
 ) -> None:
     """
-    Marginal cost estimation test for RIPEMD160 using caller-contract approach.
+    Marginal cost estimation test for RIPEMD160 using amplifier-target approach.
     
     Uses a two-level structure for 2x amplification of proving time.
     """
@@ -1380,24 +1380,24 @@ def test_marginal_ripemd160(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, RIPEMD160_CONFIG.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, RIPEMD160_CONFIG.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=RIPEMD160_CONFIG.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=RIPEMD160_CONFIG.gas_limit), pre=pre, post=post, tx=tx)
 
 
 # ============================================================================
-# BN128_ADD with caller-contract approach
+# BN128_ADD with amplifier-target approach
 # ============================================================================
 
 
@@ -1413,7 +1413,7 @@ def test_marginal_bn128_add(
     op_count: int,
 ) -> None:
     """
-    Marginal cost estimation test for BN128_ADD using caller-contract approach.
+    Marginal cost estimation test for BN128_ADD using amplifier-target approach.
     
     Uses a two-level structure for 2x amplification of proving time.
     """
@@ -1426,24 +1426,24 @@ def test_marginal_bn128_add(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, BN128_ADD_CONFIG.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, BN128_ADD_CONFIG.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=BN128_ADD_CONFIG.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=BN128_ADD_CONFIG.gas_limit), pre=pre, post=post, tx=tx)
 
 
 # ============================================================================
-# BN128_MUL with caller-contract approach
+# BN128_MUL with amplifier-target approach
 # ============================================================================
 
 
@@ -1459,7 +1459,7 @@ def test_marginal_bn128_mul(
     op_count: int,
 ) -> None:
     """
-    Marginal cost estimation test for BN128_MUL using caller-contract approach.
+    Marginal cost estimation test for BN128_MUL using amplifier-target approach.
     
     Uses a two-level structure for 2x amplification of proving time.
     """
@@ -1472,24 +1472,24 @@ def test_marginal_bn128_mul(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, BN128_MUL_CONFIG.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, BN128_MUL_CONFIG.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=BN128_MUL_CONFIG.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=BN128_MUL_CONFIG.gas_limit), pre=pre, post=post, tx=tx)
 
 
 # ============================================================================
-# BN128_PAIRING with caller-contract approach
+# BN128_PAIRING with amplifier-target approach
 # ============================================================================
 
 
@@ -1505,7 +1505,7 @@ def test_marginal_bn128_pairing(
     op_count: int,
 ) -> None:
     """
-    Marginal cost estimation test for BN128_PAIRING using caller-contract approach.
+    Marginal cost estimation test for BN128_PAIRING using amplifier-target approach.
     
     Uses a two-level structure for 2x amplification of proving time.
     """
@@ -1518,17 +1518,17 @@ def test_marginal_bn128_pairing(
     )
     target = pre.deploy_contract(code=target_code)
     
-    caller_code = _generate_precompile_caller(target, BN128_PAIRING_CONFIG.num_calls)
-    caller = pre.deploy_contract(code=caller_code)
+    amplifier_code = _generate_precompile_amplifier(target, BN128_PAIRING_CONFIG.num_calls)
+    amplifier = pre.deploy_contract(code=amplifier_code)
     
     sender = pre.fund_eoa()
     
     tx = Transaction(
-        to=caller,
+        to=amplifier,
         gas_limit=BN128_PAIRING_CONFIG.gas_limit,
         sender=sender,
     )
     
-    post = {caller: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
+    post = {amplifier: Account(storage={SUCCESS_SLOT: SUCCESS_MARKER})}
     
     state_test(env=Environment(gas_limit=BN128_PAIRING_CONFIG.gas_limit), pre=pre, post=post, tx=tx)
