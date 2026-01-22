@@ -242,11 +242,11 @@ SHA256_INPUT = bytes.fromhex("ff" * 4096)  # 4KB of 0xff
 SHA256_CONFIG = MarginalPrecompileConfig(
     name="SHA256",
     address=SHA256_ADDRESS,
-    max_op_count=1000,  # 24KB limit with noop padding
-    step=250,  # 5 data points
+    max_op_count=550,  # Reduced for 24KB with PUSH20 noop
+    step=137,  # 5 data points
     input_data=SHA256_INPUT,
     input_size=len(SHA256_INPUT),  # 4096 bytes
-    num_calls=5,  # 24KB limit
+    num_calls=8,  # 24KB limit
 )
 
 # ============================================================================
@@ -261,8 +261,8 @@ RIPEMD160_INPUT = bytes.fromhex("ff" * 1024)  # 1KB of 0xff
 RIPEMD160_CONFIG = MarginalPrecompileConfig(
     name="RIPEMD160",
     address=RIPEMD160_ADDRESS,
-    max_op_count=1000,  # 24KB limit with noop padding
-    step=250,  # 5 data points
+    max_op_count=650,  # Reduced for 24KB with PUSH20 noop
+    step=162,  # 5 data points
     input_data=RIPEMD160_INPUT,
     input_size=len(RIPEMD160_INPUT),  # 1024 bytes
     num_calls=3,  # 24KB limit
@@ -286,8 +286,8 @@ BN128_ADD_INPUT = bytes.fromhex(
 BN128_ADD_CONFIG = MarginalPrecompileConfig(
     name="BN128_ADD",
     address=BN128_ADD_ADDRESS,
-    max_op_count=800,
-    step=200,  # 5 data points
+    max_op_count=700,  # Reduced for 24KB with PUSH20 noop
+    step=175,  # 5 data points
     input_data=BN128_ADD_INPUT,
     input_size=len(BN128_ADD_INPUT),  # 128 bytes
     num_calls=3,
@@ -427,11 +427,11 @@ BLS12_G1ADD_INPUT = bytes(BLS12Spec.G1 + BLS12Spec.P1)
 BLS12_G1ADD_CONFIG = MarginalPrecompileConfig(
     name="BLS12_G1ADD",
     address=BLS12_G1ADD_ADDRESS,
-    max_op_count=770,
-    step=192,  # 5 data points
+    max_op_count=690,
+    step=172,
     input_data=BLS12_G1ADD_INPUT,
     input_size=len(BLS12_G1ADD_INPUT),  # 256 bytes
-    num_calls=1,
+    num_calls=2,
     gas_limit=1_000_000,
 )
 
