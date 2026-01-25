@@ -563,8 +563,8 @@ SWAP_CONFIGS = {
 LOG0_CONFIG = MarginalOpcodeConfig(
     name="LOG0",
     opcode=Op.LOG0,
-    max_op_count=100,
-    step=34,  # 4 data points
+    max_op_count=99,
+    step=33,  # 4 data points
     stack_args=[0, 32],  # offset, size
     inputs_per_op=2,
     outputs_per_op=0,
@@ -596,8 +596,8 @@ LOG2_CONFIG = MarginalOpcodeConfig(
 LOG3_CONFIG = MarginalOpcodeConfig(
     name="LOG3",
     opcode=Op.LOG3,
-    max_op_count=40,
-    step=14,  # 4 data points
+    max_op_count=39,
+    step=13,  # 4 data points
     stack_args=[0, 32, 0xFF, 0xFF, 0xFF],  # offset, size, topic0, topic1, topic2
     inputs_per_op=5,
     outputs_per_op=0,
@@ -607,8 +607,8 @@ LOG3_CONFIG = MarginalOpcodeConfig(
 LOG4_CONFIG = MarginalOpcodeConfig(
     name="LOG4",
     opcode=Op.LOG4,
-    max_op_count=40,
-    step=14,  # 4 data points
+    max_op_count=39,
+    step=13,  # 4 data points
     stack_args=[0, 32, 0xFF, 0xFF, 0xFF, 0xFF],  # offset, size, topic0-3
     inputs_per_op=6,
     outputs_per_op=0,
@@ -617,10 +617,10 @@ LOG4_CONFIG = MarginalOpcodeConfig(
 )
 
 JUMP_CONFIG = CustomTargetConfig(
-    name="JUMP", max_op_count=200, step=67, num_calls=6250  # 4 points
+    name="JUMP", max_op_count=198, step=66, num_calls=6250  # 4 points
 )
 JUMPI_CONFIG = CustomTargetConfig(
-    name="JUMPI", max_op_count=200, step=67, num_calls=3200  # 4 points
+    name="JUMPI", max_op_count=198, step=66, num_calls=3200  # 4 points
 )
 
 # ============================================================================
@@ -1007,8 +1007,8 @@ BLOBHASH_CONFIG = MarginalOpcodeConfig(
 SLOAD_CONFIG = MarginalOpcodeConfig(
     name="SLOAD",
     opcode=Op.SLOAD,
-    max_op_count=100,
-    step=34,  # 4 data points
+    max_op_count=99,
+    step=33,  # 4 data points
     stack_args=[100],  # Storage slot 100 (different from SUCCESS_SLOT)
     inputs_per_op=1,
     outputs_per_op=1,
@@ -1023,8 +1023,8 @@ SLOAD_CONFIG = MarginalOpcodeConfig(
 SSTORE_CONFIG = MarginalOpcodeConfig(
     name="SSTORE",
     opcode=Op.SSTORE,
-    max_op_count=40,
-    step=14,  # 4 data points
+    max_op_count=39,
+    step=13,  # 4 data points
     stack_args=[MAX_U256, 100],  # value, slot (SSTORE pops slot first)
     inputs_per_op=2,
     outputs_per_op=0,
@@ -1049,8 +1049,8 @@ TLOAD_CONFIG = MarginalOpcodeConfig(
 TSTORE_CONFIG = MarginalOpcodeConfig(
     name="TSTORE",
     opcode=Op.TSTORE,
-    max_op_count=100,
-    step=34,  # 4 data points
+    max_op_count=99,
+    step=33,  # 4 data points
     stack_args=[MAX_U256, 0],  # value, slot (TSTORE pops slot first)
     inputs_per_op=2,
     outputs_per_op=0,
@@ -1113,8 +1113,8 @@ BALANCE_CONFIG = MarginalOpcodeConfig(
 EXTCODESIZE_CONFIG = MarginalOpcodeConfig(
     name="EXTCODESIZE",
     opcode=Op.EXTCODESIZE,
-    max_op_count=100,
-    step=34,  # 4 data points
+    max_op_count=99,
+    step=33,  # 4 data points
     stack_args=[0xDEAD],  # Query code size of address 0xDEAD
     inputs_per_op=1,
     outputs_per_op=1,
@@ -1128,8 +1128,8 @@ EXTCODESIZE_CONFIG = MarginalOpcodeConfig(
 EXTCODEHASH_CONFIG = MarginalOpcodeConfig(
     name="EXTCODEHASH",
     opcode=Op.EXTCODEHASH,
-    max_op_count=100,
-    step=34,  # 4 data points
+    max_op_count=99,
+    step=33,  # 4 data points
     stack_args=[0xDEAD],  # Query code hash of address 0xDEAD
     inputs_per_op=1,
     outputs_per_op=1,
@@ -1142,8 +1142,8 @@ EXTCODEHASH_CONFIG = MarginalOpcodeConfig(
 EXTCODECOPY_CONFIG = MarginalOpcodeConfig(
     name="EXTCODECOPY",
     opcode=Op.EXTCODECOPY,
-    max_op_count=40,
-    step=14,  # 4 data points
+    max_op_count=39,
+    step=13,  # 4 data points
     stack_args=[256, 0, 0, 0xDEAD],  # size=256, offset=0, destOffset=0, address
     inputs_per_op=4,
     outputs_per_op=0,
