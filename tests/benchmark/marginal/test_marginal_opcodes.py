@@ -231,7 +231,7 @@ ADDMOD_CONFIG = MarginalOpcodeConfig(
     name="ADDMOD",
     opcode=Op.ADDMOD,
     max_op_count=200,  # 200 * 4 = 800 < 1024
-    step=67,  # 4 data points
+    step=66,  # 4 data points
     stack_args=[MOD_191_BIT, MAX_U256, MAX_U256],  # N=191-bit mod, b=MAX, a=MAX
     inputs_per_op=3,
     outputs_per_op=1,
@@ -244,7 +244,7 @@ MULMOD_CONFIG = MarginalOpcodeConfig(
     name="MULMOD",
     opcode=Op.MULMOD,
     max_op_count=200,
-    step=67,  # 4 data points
+    step=66,  # 4 data points
     stack_args=[MOD_191_BIT, MAX_U256, MAX_U256],  # N=191-bit mod, b=MAX, a=MAX
     inputs_per_op=3,
     outputs_per_op=1,
@@ -258,7 +258,7 @@ EXP_CONFIG = MarginalOpcodeConfig(
     name="EXP",
     opcode=Op.EXP,
     max_op_count=200,
-    step=67,  # 4 data points
+    step=66,  # 4 data points
     stack_args=[MAX_U256, MAX_U256],  # execution-specs uses MAX for both - matches!
     inputs_per_op=2,
     outputs_per_op=1,
@@ -617,10 +617,10 @@ LOG4_CONFIG = MarginalOpcodeConfig(
 )
 
 JUMP_CONFIG = CustomTargetConfig(
-    name="JUMP", max_op_count=201, step=67, num_calls=6250  # 4 points
+    name="JUMP", max_op_count=200, step=67, num_calls=6250  # 4 points
 )
 JUMPI_CONFIG = CustomTargetConfig(
-    name="JUMPI", max_op_count=201, step=67, num_calls=3200  # 4 points
+    name="JUMPI", max_op_count=200, step=67, num_calls=3200  # 4 points
 )
 
 # ============================================================================
@@ -840,7 +840,7 @@ MLOAD_CONFIG = MarginalOpcodeConfig(
     name="MLOAD",
     opcode=Op.MLOAD,
     max_op_count=500,
-    step=167,  # 4 data points
+    step=166,  # 4 data points
     stack_args=[0],  # offset - read from offset 0
     inputs_per_op=1,
     outputs_per_op=1,
@@ -852,7 +852,7 @@ MSTORE_CONFIG = MarginalOpcodeConfig(
     name="MSTORE",
     opcode=Op.MSTORE,
     max_op_count=500,
-    step=167,  # 4 data points
+    step=166,  # 4 data points
     stack_args=[MAX_U256, 0],  # value, offset (MSTORE pops offset first)
     inputs_per_op=2,
     outputs_per_op=0,
@@ -864,7 +864,7 @@ MSTORE8_CONFIG = MarginalOpcodeConfig(
     name="MSTORE8",
     opcode=Op.MSTORE8,
     max_op_count=500,
-    step=167,  # 4 data points
+    step=166,  # 4 data points
     stack_args=[0xFF, 0],  # value, offset (MSTORE8 pops offset first)
     inputs_per_op=2,
     outputs_per_op=0,
@@ -967,7 +967,7 @@ CALLDATALOAD_CONFIG = MarginalOpcodeConfig(
     name="CALLDATALOAD",
     opcode=Op.CALLDATALOAD,
     max_op_count=500,
-    step=167,  # 4 data points
+    step=166,  # 4 data points
     stack_args=[0],  # Load from offset 0
     inputs_per_op=1,
     outputs_per_op=1,
@@ -991,7 +991,7 @@ BLOBHASH_CONFIG = MarginalOpcodeConfig(
     name="BLOBHASH",
     opcode=Op.BLOBHASH,
     max_op_count=500,
-    step=167,  # 4 data points
+    step=166,  # 4 data points
     stack_args=[0],  # Blob index 0 (will return 0 if no blobs)
     inputs_per_op=1,
     outputs_per_op=1,
@@ -1173,16 +1173,12 @@ def push_value(value: int) -> Bytecode:
 
 
 def generate_op_counts(max_op_count: int, step: int) -> List[int]:
-    """Generate list of op_counts from 0 to max_op_count with given step.
+    """Generate list of op_counts from 0 up to max_op_count with given step.
 
-    IMPORTANT: max_op_count must be divisible by step to ensure evenly spaced points.
+    If max_op_count is not divisible by step, the last point will be the highest
+    multiple of step that doesn't exceed max_op_count.
     """
-    counts = list(range(0, max_op_count + 1, step))
-    assert counts[-1] == max_op_count, (
-        f"max_op_count={max_op_count} must be divisible by step={step}. "
-        f"Got {len(counts)} points ending at {counts[-1]} instead of {max_op_count}"
-    )
-    return counts
+    return list(range(0, max_op_count + 1, step))
 
 
 # ============================================================================

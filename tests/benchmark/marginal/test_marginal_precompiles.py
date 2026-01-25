@@ -252,7 +252,7 @@ SHA256_INPUT = bytes.fromhex("ff" * 4096)  # 4KB of 0xff
 SHA256_CONFIG = MarginalPrecompileConfig(
     name="SHA256",
     address=SHA256_ADDRESS,
-    max_op_count=1002,  # 24KB limit with noop padding
+    max_op_count=1000,  # 24KB limit with noop padding
     step=334,  # 4 data points
     input_data=SHA256_INPUT,
     input_size=len(SHA256_INPUT),  # 4096 bytes
@@ -272,7 +272,7 @@ RIPEMD160_INPUT = bytes.fromhex("ff" * 1024)  # 1KB of 0xff
 RIPEMD160_CONFIG = MarginalPrecompileConfig(
     name="RIPEMD160",
     address=RIPEMD160_ADDRESS,
-    max_op_count=1002,  # 24KB limit with noop padding
+    max_op_count=1000,  # 24KB limit with noop padding
     step=334,  # 4 data points
     input_data=RIPEMD160_INPUT,
     input_size=len(RIPEMD160_INPUT),  # 1024 bytes
@@ -298,7 +298,7 @@ BN128_ADD_INPUT = bytes.fromhex(
 BN128_ADD_CONFIG = MarginalPrecompileConfig(
     name="BN128_ADD",
     address=BN128_ADD_ADDRESS,
-    max_op_count=801,
+    max_op_count=800,
     step=267,  # 4 data points
     input_data=BN128_ADD_INPUT,
     input_size=len(BN128_ADD_INPUT),  # 128 bytes
@@ -355,7 +355,7 @@ BN128_PAIRING_INPUT = bytes.fromhex(
 BN128_PAIRING_CONFIG = MarginalPrecompileConfig(
     name="BN128_PAIRING",
     address=BN128_PAIRING_ADDRESS,
-    max_op_count=9,  # 113K gas/call
+    max_op_count=8,  # 113K gas/call
     step=3,  # 4 data points
     input_data=BN128_PAIRING_INPUT,
     input_size=len(BN128_PAIRING_INPUT),  # 384 bytes (2 pairs * 192)
@@ -444,7 +444,7 @@ BLS12_G1ADD_INPUT = bytes(BLS12Spec.G1 + BLS12Spec.P1)
 BLS12_G1ADD_CONFIG = MarginalPrecompileConfig(
     name="BLS12_G1ADD",
     address=BLS12_G1ADD_ADDRESS,
-    max_op_count=771,  # 375 gas/call
+    max_op_count=770,  # 375 gas/call
     step=257,  # 4 data points
     input_data=BLS12_G1ADD_INPUT,
     input_size=len(BLS12_G1ADD_INPUT),  # 256 bytes
@@ -572,12 +572,12 @@ BLS12_MAP_FP2_TO_G2_CONFIG = MarginalPrecompileConfig(
 
 
 def generate_op_counts(max_op_count: int, step: int) -> List[int]:
-    """Generate list of op_counts from 0 to max_op_count with given step."""
-    counts = list(range(0, max_op_count + 1, step))
-    # Ensure max_op_count is included even if not aligned with step
-    if counts[-1] != max_op_count:
-        counts.append(max_op_count)
-    return counts
+    """Generate list of op_counts from 0 up to max_op_count with given step.
+
+    If max_op_count is not divisible by step, the last point will be the highest
+    multiple of step that doesn't exceed max_op_count.
+    """
+    return list(range(0, max_op_count + 1, step))
 
 
 # ============================================================================
