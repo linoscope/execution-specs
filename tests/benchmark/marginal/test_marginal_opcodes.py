@@ -170,7 +170,7 @@ SUB_CONFIG = MarginalOpcodeConfig(
     stack_args=[BLS12_381_SCALAR_FIELD, SECP256K1_FIELD_PRIME],  # DEFAULT_BINOP_ARGS
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=1900,
+    num_calls=5700,
 )
 
 # Ref: test_arithmetic.py opcode_DIV-0
@@ -183,7 +183,7 @@ DIV_CONFIG = MarginalOpcodeConfig(
     stack_args=[DIV_DIVISOR, DIV_DIVIDEND],  # divisor, dividend
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=100,
+    num_calls=300,
 )
 
 # Ref: test_arithmetic.py opcode_SDIV-1
@@ -209,7 +209,7 @@ MOD_CONFIG = MarginalOpcodeConfig(
     stack_args=[MOD_191_BIT, MAX_U256],  # 191-bit modulus, MAX dividend
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=100,
+    num_calls=300,
 )
 
 # Ref: test_arithmetic.py op_SMOD-mod_bits_191
@@ -222,7 +222,7 @@ SMOD_CONFIG = MarginalOpcodeConfig(
     stack_args=[MOD_191_BIT, MAX_U256],  # 191-bit modulus, MAX dividend
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=150,
+    num_calls=450,
 )
 
 # Ref: test_arithmetic.py op_ADDMOD-mod_bits_191
@@ -248,7 +248,7 @@ MULMOD_CONFIG = MarginalOpcodeConfig(
     stack_args=[MOD_191_BIT, MAX_U256, MAX_U256],  # N=191-bit mod, b=MAX, a=MAX
     inputs_per_op=3,
     outputs_per_op=1,
-    num_calls=100,
+    num_calls=300,
 )
 
 # Ref: test_arithmetic.py opcode_EXP (uses MAX_U256, MAX_U256)
@@ -262,7 +262,7 @@ EXP_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],  # execution-specs uses MAX for both - matches!
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=5,
+    num_calls=15,
 )
 
 # Ref: test_arithmetic.py opcode_SIGNEXTEND (uses k=3, x=0xFFDADADA)
@@ -312,7 +312,7 @@ SLT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=10000,
+    num_calls=30000,
 )
 
 SGT_CONFIG = MarginalOpcodeConfig(
@@ -323,7 +323,7 @@ SGT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=10000,
+    num_calls=30000,
 )
 
 EQ_CONFIG = MarginalOpcodeConfig(
@@ -345,7 +345,7 @@ ISZERO_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256],
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=8000,
+    num_calls=24000,
 )
 
 # ============================================================================
@@ -382,7 +382,7 @@ XOR_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=6000,
+    num_calls=12000,
 )
 
 NOT_CONFIG = MarginalOpcodeConfig(
@@ -393,7 +393,7 @@ NOT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256],
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=16000,
+    num_calls=48000,
 )
 
 BYTE_CONFIG = MarginalOpcodeConfig(
@@ -404,7 +404,7 @@ BYTE_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, 31],  # x=MAX, i=31
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=800,
+    num_calls=2400,
 )
 
 SHL_CONFIG = MarginalOpcodeConfig(
@@ -415,7 +415,7 @@ SHL_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, 255],  # value=MAX, shift=255
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=4000,
+    num_calls=12000,
 )
 
 SHR_CONFIG = MarginalOpcodeConfig(
@@ -426,7 +426,7 @@ SHR_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, 255],  # value=MAX, shift=255
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=2000,
+    num_calls=6000,
 )
 
 SAR_CONFIG = MarginalOpcodeConfig(
@@ -437,7 +437,7 @@ SAR_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, 255],  # value=MAX, shift=255
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=2400,
+    num_calls=4800,
 )
 
 # ============================================================================
@@ -466,7 +466,7 @@ KECCAK256_CONFIG = MarginalOpcodeConfig(
     stack_args=[8192, 0],  # size=8KB, offset=0
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=10,
+    num_calls=20,
     # Pre-allocate 8KB of memory with data to hash
     setup_code=_generate_keccak256_setup(),
 )
@@ -479,9 +479,11 @@ KECCAK256_CONFIG = MarginalOpcodeConfig(
 # - POP: single variant
 # - DUP/SWAP: DUP1-16, SWAP1-16
 
-# Uniform num_calls for all variants within each opcode type
+# Base num_calls for variants within each opcode type
 PUSH_NUM_CALLS = 4800
+PUSH_NUM_CALLS_MULTIPLIER = {0: 2, 1: 2, 30: 2, 31: 2, 32: 2}
 DUP_NUM_CALLS = 4800
+DUP_NUM_CALLS_MULTIPLIER = {2: 2, 7: 2, 8: 2, 9: 2, 10: 2}
 SWAP_NUM_CALLS = 2700
 
 
@@ -506,6 +508,7 @@ def _create_push_config(n: int) -> MarginalOpcodeConfig:
     max_op_count = _push_max_op_count(n)
     step = max_op_count // 4  # 4 data points
     opcode = Op.PUSH0 if n == 0 else getattr(Op, f"PUSH{n}")(_push_max_value(n))
+    num_calls = PUSH_NUM_CALLS * PUSH_NUM_CALLS_MULTIPLIER.get(n, 3)
     return MarginalOpcodeConfig(
         name=f"PUSH{n}",
         opcode=opcode,
@@ -514,7 +517,7 @@ def _create_push_config(n: int) -> MarginalOpcodeConfig:
         stack_args=[],  # PUSH doesn't consume stack
         inputs_per_op=0,
         outputs_per_op=1,
-        num_calls=PUSH_NUM_CALLS,
+        num_calls=num_calls,
     )
 
 
@@ -530,7 +533,7 @@ POP_CONFIG = MarginalOpcodeConfig(
     stack_args=[0],  # Push 0 to pop (using PUSH0 is cheapest)
     inputs_per_op=1,
     outputs_per_op=0,
-    num_calls=1100,
+    num_calls=3300,
 )
 
 # ============================================================================
@@ -543,7 +546,7 @@ DUP_CONFIGS = {
         name=f"DUP{n}",
         max_op_count=300,
         step=100,  # 4 data points
-        num_calls=DUP_NUM_CALLS,
+        num_calls=DUP_NUM_CALLS * DUP_NUM_CALLS_MULTIPLIER.get(n, 3),
         variant=n,
     )
     for n in range(1, 17)
@@ -568,7 +571,7 @@ LOG0_CONFIG = MarginalOpcodeConfig(
     stack_args=[0, 32],  # offset, size
     inputs_per_op=2,
     outputs_per_op=0,
-    num_calls=150,
+    num_calls=450,
     setup_code=Op.MSTORE(0, MAX_U256),  # Fill memory with data to log
 )
 LOG1_CONFIG = MarginalOpcodeConfig(
@@ -579,7 +582,7 @@ LOG1_CONFIG = MarginalOpcodeConfig(
     stack_args=[0, 32, 0xFF],  # offset, size, topic0
     inputs_per_op=3,
     outputs_per_op=0,
-    num_calls=125,
+    num_calls=375,
     setup_code=Op.MSTORE(0, MAX_U256),
 )
 LOG2_CONFIG = MarginalOpcodeConfig(
@@ -590,7 +593,7 @@ LOG2_CONFIG = MarginalOpcodeConfig(
     stack_args=[0, 32, 0xFF, 0xFF],  # offset, size, topic0, topic1
     inputs_per_op=4,
     outputs_per_op=0,
-    num_calls=130,
+    num_calls=260,
     setup_code=Op.MSTORE(0, MAX_U256),
 )
 LOG3_CONFIG = MarginalOpcodeConfig(
@@ -601,7 +604,7 @@ LOG3_CONFIG = MarginalOpcodeConfig(
     stack_args=[0, 32, 0xFF, 0xFF, 0xFF],  # offset, size, topic0, topic1, topic2
     inputs_per_op=5,
     outputs_per_op=0,
-    num_calls=90,
+    num_calls=270,
     setup_code=Op.MSTORE(0, MAX_U256),
 )
 LOG4_CONFIG = MarginalOpcodeConfig(
@@ -617,10 +620,10 @@ LOG4_CONFIG = MarginalOpcodeConfig(
 )
 
 JUMP_CONFIG = CustomTargetConfig(
-    name="JUMP", max_op_count=198, step=66, num_calls=6250  # 4 points
+    name="JUMP", max_op_count=198, step=66, num_calls=18750  # 4 points
 )
 JUMPI_CONFIG = CustomTargetConfig(
-    name="JUMPI", max_op_count=198, step=66, num_calls=3200  # 4 points
+    name="JUMPI", max_op_count=198, step=66, num_calls=9600  # 4 points
 )
 
 # ============================================================================
@@ -635,7 +638,7 @@ ADDRESS_CONFIG = MarginalOpcodeConfig(
     stack_args=[],  # No input
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=3200,
+    num_calls=9600,
 )
 
 ORIGIN_CONFIG = MarginalOpcodeConfig(
@@ -657,7 +660,7 @@ CALLER_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=2000,
+    num_calls=6000,
 )
 
 CALLVALUE_CONFIG = MarginalOpcodeConfig(
@@ -668,7 +671,7 @@ CALLVALUE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=250,
+    num_calls=750,
 )
 
 CALLDATASIZE_CONFIG = MarginalOpcodeConfig(
@@ -679,7 +682,7 @@ CALLDATASIZE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=500,
+    num_calls=1500,
 )
 
 CODESIZE_CONFIG = MarginalOpcodeConfig(
@@ -701,7 +704,7 @@ GASPRICE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=450,
+    num_calls=1350,
 )
 
 RETURNDATASIZE_CONFIG = MarginalOpcodeConfig(
@@ -712,7 +715,7 @@ RETURNDATASIZE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=300,
+    num_calls=900,
 )
 
 GAS_CONFIG = MarginalOpcodeConfig(
@@ -723,7 +726,7 @@ GAS_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=1800,
+    num_calls=5400,
 )
 
 # ============================================================================
@@ -738,7 +741,7 @@ COINBASE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=2800,
+    num_calls=8400,
 )
 
 TIMESTAMP_CONFIG = MarginalOpcodeConfig(
@@ -749,7 +752,7 @@ TIMESTAMP_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=500,
+    num_calls=1500,
 )
 
 NUMBER_CONFIG = MarginalOpcodeConfig(
@@ -771,7 +774,7 @@ PREVRANDAO_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=200,
+    num_calls=600,
 )
 
 GASLIMIT_CONFIG = MarginalOpcodeConfig(
@@ -782,7 +785,7 @@ GASLIMIT_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=1000,
+    num_calls=3000,
 )
 
 CHAINID_CONFIG = MarginalOpcodeConfig(
@@ -804,7 +807,7 @@ SELFBALANCE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=100,
+    num_calls=300,
 )
 
 BASEFEE_CONFIG = MarginalOpcodeConfig(
@@ -815,7 +818,7 @@ BASEFEE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=500,
+    num_calls=1500,
 )
 
 
@@ -827,7 +830,7 @@ BLOBBASEFEE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=450,
+    num_calls=1350,
 )
 
 # ============================================================================
@@ -844,7 +847,7 @@ MLOAD_CONFIG = MarginalOpcodeConfig(
     stack_args=[0],  # offset - read from offset 0
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=2500,
+    num_calls=7500,
     setup_code=Op.MSTORE(0, MAX_U256),  # Pre-expand memory with data
 )
 
@@ -868,7 +871,7 @@ MSTORE8_CONFIG = MarginalOpcodeConfig(
     stack_args=[0xFF, 0],  # value, offset (MSTORE8 pops offset first)
     inputs_per_op=2,
     outputs_per_op=0,
-    num_calls=5000,
+    num_calls=15000,
     setup_code=Op.MSTORE(0, 0),  # Pre-expand memory
 )
 
@@ -880,7 +883,7 @@ MSIZE_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=2500,
+    num_calls=7500,
     setup_code=Op.MSTORE(0, 0),  # Pre-expand memory so MSIZE returns non-zero
 )
 
@@ -894,7 +897,7 @@ CALLDATACOPY_CONFIG = MarginalOpcodeConfig(
     stack_args=[32, 0, 0],  # size=32 bytes, offset=0, destOffset=0 (worst-case: small copy)
     inputs_per_op=3,
     outputs_per_op=0,
-    num_calls=3200,
+    num_calls=9600,
     setup_code=Op.MSTORE(0, 0),  # Pre-expand memory
 )
 
@@ -927,7 +930,7 @@ RETURNDATACOPY_CONFIG = MarginalOpcodeConfig(
     stack_args=[64, 0, 128],  # size=64, offset=0, destOffset=128
     inputs_per_op=3,
     outputs_per_op=0,
-    num_calls=2800,
+    num_calls=5600,
     setup_code=_generate_returndatacopy_setup(),
 )
 
@@ -941,7 +944,7 @@ CODECOPY_CONFIG = MarginalOpcodeConfig(
     stack_args=[32, 0, 0],  # size=32 bytes, offset=0, destOffset=0 (worst-case: small copy)
     inputs_per_op=3,
     outputs_per_op=0,
-    num_calls=800,
+    num_calls=2400,
     setup_code=Op.MSTORE(0, 0),  # Pre-expand memory
 )
 
@@ -954,7 +957,7 @@ MCOPY_CONFIG = MarginalOpcodeConfig(
     stack_args=[1024, 0, 4096],  # size=1KB, srcOffset=0, destOffset=4096
     inputs_per_op=3,
     outputs_per_op=0,
-    num_calls=275,
+    num_calls=550,
     setup_code=Op.MSTORE(0, MAX_U256) + Op.MSTORE(4096, 0),  # Pre-expand memory regions
 )
 
@@ -971,7 +974,7 @@ CALLDATALOAD_CONFIG = MarginalOpcodeConfig(
     stack_args=[0],  # Load from offset 0
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=3000,
+    num_calls=9000,
 )
 
 # BLOCKHASH: pops block number, pushes hash (or 0 if out of range)
@@ -995,7 +998,7 @@ BLOBHASH_CONFIG = MarginalOpcodeConfig(
     stack_args=[0],  # Blob index 0 (will return 0 if no blobs)
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=2000,
+    num_calls=6000,
 )
 
 # ============================================================================
@@ -1012,7 +1015,7 @@ SLOAD_CONFIG = MarginalOpcodeConfig(
     stack_args=[100],  # Storage slot 100 (different from SUCCESS_SLOT)
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=600,
+    num_calls=1800,
     setup_code=Op.POP(Op.SLOAD(100)),  # Warm up slot 100 first
 )
 
@@ -1028,7 +1031,7 @@ SSTORE_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, 100],  # value, slot (SSTORE pops slot first)
     inputs_per_op=2,
     outputs_per_op=0,
-    num_calls=500,
+    num_calls=1000,
     setup_code=Op.POP(Op.SLOAD(100)),  # Warm up slot 100 first
 )
 
@@ -1054,7 +1057,7 @@ TSTORE_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, 0],  # value, slot (TSTORE pops slot first)
     inputs_per_op=2,
     outputs_per_op=0,
-    num_calls=750,
+    num_calls=2250,
 )
 
 # ============================================================================
@@ -1072,7 +1075,7 @@ JUMPDEST_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=0,
-    num_calls=5200,
+    num_calls=10400,
 )
 
 # PC pushes the program counter value
@@ -1084,7 +1087,7 @@ PC_CONFIG = MarginalOpcodeConfig(
     stack_args=[],
     inputs_per_op=0,
     outputs_per_op=1,
-    num_calls=500,
+    num_calls=1500,
 )
 
 # ============================================================================
@@ -1103,7 +1106,7 @@ BALANCE_CONFIG = MarginalOpcodeConfig(
     stack_args=[0xDEAD],  # Query balance of address 0xDEAD
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=100,
+    num_calls=300,
     setup_code=Op.POP(Op.BALANCE(0xDEAD)),  # Warm up address 0xDEAD first
 )
 
@@ -1118,7 +1121,7 @@ EXTCODESIZE_CONFIG = MarginalOpcodeConfig(
     stack_args=[0xDEAD],  # Query code size of address 0xDEAD
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=750,
+    num_calls=2250,
     setup_code=Op.POP(Op.EXTCODESIZE(0xDEAD)),  # Warm up address 0xDEAD first
 )
 
@@ -1147,7 +1150,7 @@ EXTCODECOPY_CONFIG = MarginalOpcodeConfig(
     stack_args=[256, 0, 0, 0xDEAD],  # size=256, offset=0, destOffset=0, address
     inputs_per_op=4,
     outputs_per_op=0,
-    num_calls=1200,
+    num_calls=3600,
     setup_code=Op.MSTORE(0, 0) + Op.POP(Op.EXTCODESIZE(0xDEAD)),  # Pre-expand memory + warm up address
 )
 
@@ -1491,7 +1494,7 @@ def generate_jumpi_target(op_count: int, max_op_count: int) -> Bytecode:
 # Stack-limited but amplifier-amplified for high total op counts
 # Stack limit: 1024, each noop leaves +5 or +6 items
 # Safe max_op_count: ~150 (with buffer), amplifier amplifies to 150 × N total ops
-CALL_NUM_CALLS = 75
+CALL_NUM_CALLS = 225
 CALL_MAX_OP_COUNT = 100  # Target contract executes up to 100 CALLs per invocation
 CALL_STEP = 25  # 4 data points
 
@@ -1671,7 +1674,7 @@ def test_marginal_staticcall(state_test: StateTestFiller, pre: Alloc, op_count: 
 
 # Stack-limited: each noop leaves +2 items (3 pushed, 1 popped)
 # Safe max_op_count: ~400 (with buffer), amplifier amplifies total
-CREATE_NUM_CALLS = 50
+CREATE_NUM_CALLS = 150
 CREATE_MAX_OP_COUNT = 20  # Target executes up to 20 CREATEs per call
 CREATE_STEP = 5  # 4 data points
 
