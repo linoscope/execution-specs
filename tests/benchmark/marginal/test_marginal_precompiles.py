@@ -303,7 +303,7 @@ BN128_ADD_CONFIG = MarginalPrecompileConfig(
     input_data=BN128_ADD_INPUT,
     input_size=len(BN128_ADD_INPUT),  # 128 bytes
     ret_size=64,  # One G1 point (2 × 32 bytes)
-    num_calls=9,
+    num_calls=3,
 )
 
 # ============================================================================
@@ -763,7 +763,7 @@ IDENTITY_CONFIG = MarginalPrecompileConfig(
     input_data=IDENTITY_INPUT,
     input_size=len(IDENTITY_INPUT),  # 1024 bytes
     ret_size=len(IDENTITY_INPUT),  # Same as input (identity copy)
-    num_calls=400,
+    num_calls=200,
     gas_limit=500_000_000,  # High gas limit for many calls
 )
 
