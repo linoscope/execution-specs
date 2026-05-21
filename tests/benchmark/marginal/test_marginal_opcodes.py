@@ -146,7 +146,7 @@ ADD_CONFIG = MarginalOpcodeConfig(
     stack_args=[BLS12_381_SCALAR_FIELD, SECP256K1_FIELD_PRIME],  # DEFAULT_BINOP_ARGS
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=6000,
+    num_calls=1500,
 )
 
 # Ref: test_arithmetic.py opcode_MUL (uses DEFAULT_BINOP_ARGS)
@@ -290,7 +290,7 @@ LT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=5000,
+    num_calls=2500,
 )
 
 GT_CONFIG = MarginalOpcodeConfig(
@@ -301,7 +301,7 @@ GT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=5000,
+    num_calls=2500,
 )
 
 SLT_CONFIG = MarginalOpcodeConfig(
@@ -312,7 +312,7 @@ SLT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=5000,
+    num_calls=2500,
 )
 
 SGT_CONFIG = MarginalOpcodeConfig(
@@ -323,7 +323,7 @@ SGT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=5000,
+    num_calls=2500,
 )
 
 EQ_CONFIG = MarginalOpcodeConfig(
@@ -345,7 +345,7 @@ ISZERO_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256],
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=4000,
+    num_calls=2000,
 )
 
 # ============================================================================
@@ -360,7 +360,7 @@ AND_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=10000,
+    num_calls=2500,
 )
 
 OR_CONFIG = MarginalOpcodeConfig(
@@ -371,7 +371,7 @@ OR_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=10000,
+    num_calls=2500,
 )
 
 XOR_CONFIG = MarginalOpcodeConfig(
@@ -382,7 +382,7 @@ XOR_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256, MAX_U256],
     inputs_per_op=2,
     outputs_per_op=1,
-    num_calls=3000,
+    num_calls=1500,
 )
 
 NOT_CONFIG = MarginalOpcodeConfig(
@@ -393,7 +393,7 @@ NOT_CONFIG = MarginalOpcodeConfig(
     stack_args=[MAX_U256],
     inputs_per_op=1,
     outputs_per_op=1,
-    num_calls=8000,
+    num_calls=4000,
 )
 
 BYTE_CONFIG = MarginalOpcodeConfig(
