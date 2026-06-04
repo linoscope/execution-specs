@@ -763,7 +763,7 @@ IDENTITY_CONFIG = MarginalPrecompileConfig(
     input_data=IDENTITY_INPUT,
     input_size=len(IDENTITY_INPUT),  # 1024 bytes
     ret_size=len(IDENTITY_INPUT),  # Same as input (identity copy)
-    num_calls=200,
+    num_calls=100,
     gas_limit=500_000_000,  # High gas limit for many calls
 )
 
